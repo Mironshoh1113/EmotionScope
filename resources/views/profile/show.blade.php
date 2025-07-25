@@ -1,0 +1,1 @@
+@php header('Location: ' . route('profile.info')); exit; @endphp 
