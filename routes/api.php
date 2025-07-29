@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Text Analysis API Routes
+Route::post('/v1/analyze', [ApiController::class, 'analyzeText']);
+Route::get('/v1/status', [ApiController::class, 'status']);
+
+// Project Request Details API Routes
+Route::get('/projects/{project}/requests/{request}', [ApiController::class, 'getRequestDetails']);

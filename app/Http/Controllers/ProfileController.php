@@ -36,59 +36,96 @@ class ProfileController extends Controller
         return redirect()->route('profile.show')->with('success', 'Profil yangilandi!');
     }
 
-    public function sendRequest(Request $request)
-    {
-        $user = Auth::user();
-        $request->validate([
-            'text' => 'required|string|max:1000',
-        ]);
-        // Limit va balans tekshirish
-        if ($user->requests_used >= $user->request_limit) {
-            return redirect()->back()->with('error', __('request_limit'));
-        }
-        // Matn tahlili (mock)
-        $text = $request->input('text');
-        // Demo uchun random natija
-        $types = ['positive', 'negative', 'neutral', 'offensive', 'other'];
-        $result_type = $types[array_rand($types)];
-        $response = 'Demo javob: ' . ucfirst($result_type);
-        // So'rovni bazaga yozish
-        $userRequest = $user->requests()->create([
-            'text' => $text,
-            'result_type' => $result_type,
-            'response' => $response,
-        ]);
-        // Statistika yangilash
-        $stat = $user->requestStats()->firstOrCreate([
-            'user_id' => $user->id,
-            'type' => $result_type
-        ]);
-        $stat->count += 1;
-        $stat->save();
-        // Limitni oshirish
-        $user->requests_used += 1;
-        $user->save();
-        return redirect()->route('profile.requests')->with('success', __('send') . ' OK!');
-    }
-
     public function info()
     {
         $user = Auth::user();
         return view('profile.info', compact('user'));
     }
+    
     public function balance()
     {
         $user = Auth::user();
         return view('profile.balance', compact('user'));
     }
-    public function stats()
+
+    public function apiTest()
     {
         $user = Auth::user();
-        return view('profile.stats', compact('user'));
+        $projects = $user->projects()->where('is_active', true)->get();
+        return view('profile.api-test', compact('user', 'projects'));
     }
-    public function requests()
+
+    public function testApi(Request $request)
     {
+        // Increase PHP execution time for API requests
+        set_time_limit(120); // 2 minutes
+        ini_set('max_execution_time', 120);
+        
+        $request->validate([
+            'project_id' => 'required|exists:projects,id',
+            'text' => 'required|string|max:10000',
+        ]);
+
         $user = Auth::user();
-        return view('profile.requests', compact('user'));
+        $project = $user->projects()->findOrFail($request->project_id);
+
+        if (!$project->is_active) {
+            return response()->json(['success' => false, 'error' => 'Project is not active']);
+        }
+
+        // Check if user has remaining requests
+        if (!$user->canMakeRequest()) {
+            return response()->json(['success' => false, 'error' => 'User request limit exceeded']);
+        }
+
+        if (!$project->canMakeRequest()) {
+            return response()->json(['success' => false, 'error' => 'Project request limit exceeded']);
+        }
+
+        // Call ApiController directly
+        try {
+            \Log::info('Calling ApiController directly', [
+                'project_id' => $project->id,
+                'text_length' => strlen($request->text)
+            ]);
+            
+            // Create a new request for the API
+            $apiRequest = new \Illuminate\Http\Request();
+            $apiRequest->merge(['text' => $request->text]);
+            $apiRequest->headers->set('Authorization', 'Bearer ' . $project->api_token);
+            $apiRequest->headers->set('Content-Type', 'application/json');
+            $apiRequest->headers->set('Accept', 'application/json');
+            
+            // Call the ApiController
+            $apiController = new \App\Http\Controllers\ApiController();
+            $apiResponse = $apiController->analyzeText($apiRequest);
+            
+            \Log::info('API response received', [
+                'status' => $apiResponse->getStatusCode(),
+                'body' => $apiResponse->getContent()
+            ]);
+            
+            $responseData = json_decode($apiResponse->getContent(), true);
+            $httpCode = $apiResponse->getStatusCode();
+            
+        } catch (\Exception $e) {
+            \Log::error('API request failed', [
+                'error' => $e->getMessage(),
+                'project_id' => $project->id
+            ]);
+            return response()->json(['success' => false, 'error' => 'API request timeout or error: ' . $e->getMessage()]);
+        }
+
+        // Increment user's request count
+        $user->increment('requests_used');
+        
+        $result = [
+            'status_code' => $httpCode,
+            'response_data' => $responseData,
+            'project_name' => $project->name,
+            'text' => $request->text,
+        ];
+
+        return response()->json(['success' => true, 'result' => $result]);
     }
 } 

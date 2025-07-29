@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emotion Scope — {{ __('welcome') }}</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎭</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
         <style>
@@ -35,7 +36,9 @@
 <body class="bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen text-gray-100">
     <!-- Navbar -->
     <nav class="flex items-center justify-between px-8 py-4 bg-black/80 shadow-lg sticky top-0 z-50 animate-fade-in-down">
-        <div class="text-2xl font-extrabold tracking-tight text-yellow-400">Emotion Scope</div>
+        <div class="text-2xl font-extrabold tracking-tight text-yellow-400">
+            <span class="text-4xl mr-2">🎭</span>Emotion Scope
+        </div>
         <ul class="flex gap-6 font-semibold items-center">
             <li><a href="#about" class="menu-anim px-3 py-1 rounded">{{ __('menyu_about') }}</a></li>
             <li><a href="#features" class="menu-anim px-3 py-1 rounded">{{ __('menyu_features') }}</a></li>
@@ -49,39 +52,37 @@
                     </select>
                 </form>
             </li>
-                    @auth
-                <li class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
-                    <button type="button" @click="open = !open" @blur="setTimeout(() => open = false, 150)" class="flex items-center gap-2 px-3 py-1 bg-gray-800 border border-gray-700 rounded-lg shadow hover:bg-gray-700 transition select-none focus:outline-none">
-                        <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        <span>{{ Auth::user()->name }}</span>
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                    </button>
-                    <ul x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-lg py-2 z-50" @click.away="open = false">
-                        @if(Auth::user()->is_admin)
-                            <li><a href="/admin" class="block px-4 py-2 hover:bg-gray-800">{{ __('admin_panel') }}</a></li>
-                            <li><a href="/admin/profile" class="block px-4 py-2 hover:bg-gray-800">Admin profili</a></li>
-                            <li><a href="/admin/users" class="block px-4 py-2 hover:bg-gray-800">Foydalanuvchilar</a></li>
-                            <li><a href="/admin/homepage" class="block px-4 py-2 hover:bg-gray-800">Asosiy sahifa matnlari</a></li>
+            @auth
+            <li class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
+                <button type="button" @click="open = !open" @blur="setTimeout(() => open = false, 150)" class="flex items-center gap-2 px-3 py-1 bg-gray-800 border border-gray-700 rounded-lg shadow hover:bg-gray-700 transition select-none focus:outline-none">
+                    <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    <span>{{ Auth::user()->name }}</span>
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+                <ul x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-lg py-2 z-50" @click.away="open = false">
+                    @if(Auth::user()->is_admin)
+                        <li><a href="/admin/profile" class="block px-4 py-2 hover:bg-gray-800">Admin profili</a></li>
+                        <li><a href="/admin/users" class="block px-4 py-2 hover:bg-gray-800">{{ __('admin_panel') }}</a></li>
                     @else
-                            <li><a href="{{ route('profile.show') }}" class="block px-4 py-2 hover:bg-gray-800">{{ __('profile') }}</a></li>
-                        @endif
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}" class="block">
-                                @csrf
-                                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-800">{{ __('logout') }}</button>
-                            </form>
-                        </li>
-                    </ul>
-                </li>
+                        <li><a href="{{ route('profile.show') }}" class="block px-4 py-2 hover:bg-gray-800">{{ __('profile') }}</a></li>
+                    @endif
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}" class="block">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-800">{{ __('logout') }}</button>
+                        </form>
+                    </li>
+                </ul>
+            </li>
             @else
-                <li><a href="{{ route('login') }}" class="menu-anim px-3 py-1 rounded">{{ __('menyu_login') }}</a></li>
-                <li><a href="{{ route('register') }}" class="menu-anim px-3 py-1 rounded">{{ __('menyu_register') }}</a></li>
-                <li>
-                    <a href="{{ route('google.login') }}" class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-lg shadow hover:bg-gray-100 transition text-gray-900">
-                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5"> Google
-                    </a>
-                </li>
-                    @endauth
+            <li><a href="{{ route('login') }}" class="menu-anim px-3 py-1 rounded">{{ __('menyu_login') }}</a></li>
+            <li><a href="{{ route('register') }}" class="menu-anim px-3 py-1 rounded">{{ __('menyu_register') }}</a></li>
+            <li>
+                <a href="{{ route('google.login') }}" class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-lg shadow hover:bg-gray-100 transition text-gray-900">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5"> Google
+                </a>
+            </li>
+            @endauth
         </ul>
     </nav>
 
@@ -90,7 +91,20 @@
         <h1 class="text-5xl md:text-6xl font-extrabold mb-6 drop-shadow-lg tracking-tight">{{ __('brand_title') }}</h1>
         <h2 class="text-2xl md:text-3xl font-semibold mb-8 text-gray-100">{{ __('brand_subtitle') }}</h2>
         <p class="text-lg md:text-xl mb-8 max-w-2xl mx-auto text-gray-300">{{ __('brand_intro') }}</p>
-        <a href="#about" class="inline-block bg-yellow-400 text-gray-900 px-8 py-3 rounded-full font-bold shadow hover:bg-yellow-300 transition text-lg">{{ __('learn_more') }}</a>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="{{ route('register') }}" class="inline-flex items-center bg-green-500 text-white px-8 py-3 rounded-full font-bold shadow hover:bg-green-600 transition text-lg">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                {{ __('try_free') }}
+            </a>
+            <a href="#about" class="inline-flex items-center bg-yellow-400 text-gray-900 px-8 py-3 rounded-full font-bold shadow hover:bg-yellow-300 transition text-lg">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {{ __('learn_more') }}
+            </a>
+        </div>
     </section>
 
     <!-- About Section -->
@@ -227,6 +241,32 @@
                 <p class="text-gray-300">{{ __('features_card3_text') }}</p>
             </div>
         </div>
+    </section>
+
+    <!-- Feedback Section -->
+    <section id="feedback" class="py-20 px-4 max-w-2xl mx-auto fade-in-up">
+        <h2 class="text-3xl font-bold text-center mb-8 text-yellow-400">{{ __('feedback.title') }}</h2>
+        <form action="{{ route('feedback.store') }}" method="POST" class="bg-gray-900 rounded-xl shadow-lg border border-gray-800 p-8 space-y-6">
+            @csrf
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-200 mb-2">{{ __('feedback.name') }}</label>
+                <input type="text" id="name" name="name" required class="w-full px-4 py-3 border border-gray-700 rounded-lg bg-gray-800 text-gray-100 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-colors duration-200" placeholder="{{ __('feedback.name_placeholder') }}">
+            </div>
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-200 mb-2">{{ __('feedback.email') }}</label>
+                <input type="email" id="email" name="email" required class="w-full px-4 py-3 border border-gray-700 rounded-lg bg-gray-800 text-gray-100 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-colors duration-200" placeholder="{{ __('feedback.email_placeholder') }}">
+            </div>
+            <div>
+                <label for="message" class="block text-sm font-medium text-gray-200 mb-2">{{ __('feedback.message') }}</label>
+                <textarea id="message" name="message" rows="5" required class="w-full px-4 py-3 border border-gray-700 rounded-lg bg-gray-800 text-gray-100 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-colors duration-200" placeholder="{{ __('feedback.message_placeholder') }}"></textarea>
+            </div>
+            <div class="flex justify-center">
+                <button type="submit" class="inline-flex items-center px-8 py-3 bg-yellow-400 text-gray-900 font-bold rounded-lg shadow hover:bg-yellow-300 transition text-lg">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    {{ __('feedback.send') }}
+                </button>
+            </div>
+        </form>
     </section>
 
     <!-- Footer -->
