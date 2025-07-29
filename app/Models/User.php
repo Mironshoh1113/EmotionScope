@@ -27,6 +27,7 @@ class User extends Authenticatable
         'balance',
         'request_limit',
         'requests_used',
+        'plan_id',
     ];
 
     /**
@@ -55,6 +56,31 @@ class User extends Authenticatable
 
     public function requests()
     {
-        return $this->hasMany(UserRequest::class);
+        return $this->hasManyThrough(ProjectRequest::class, Project::class);
+    }
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class);
+    }
+
+    public function canMakeRequest()
+    {
+        return $this->requests_used < $this->request_limit;
+    }
+
+    public function getRemainingRequests()
+    {
+        return max(0, $this->request_limit - $this->requests_used);
     }
 }

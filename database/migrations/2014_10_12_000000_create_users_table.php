@@ -20,9 +20,10 @@ return new class extends Migration
             $table->boolean('is_admin')->default(false);
             $table->string('oken')->unique();
             $table->boolean('is_blocked')->default(false);
-            $table->decimal('balance', 10, 2)->default(0);
+            $table->decimal('balance', 12, 2)->default(0);
             $table->integer('request_limit')->default(100);
             $table->integer('requests_used')->default(0);
+            $table->unsignedBigInteger('plan_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

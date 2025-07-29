@@ -5,6 +5,12 @@
 
     RewriteEngine On
 
+    # Increase PHP execution time for API requests
+    <IfModule mod_php.c>
+        php_value max_execution_time 120
+        php_value memory_limit 256M
+    </IfModule>
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
