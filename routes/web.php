@@ -93,13 +93,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile/api-test', [ProfileController::class, 'apiTest'])->name('profile.api-test');
     Route::post('/profile/api-test', [ProfileController::class, 'testApi'])->name('profile.test-api');
     
-    // Projects routes
-    Route::resource('profile/projects', ProjectController::class, ['as' => 'profile']);
+    // Projects routes - Custom routes must come before resource route
     Route::get('/profile/projects/{project}/stats', [ProjectController::class, 'stats'])->name('profile.projects.stats');
     Route::get('/profile/projects/{project}/requests', [ProjectController::class, 'requests'])->name('profile.projects.requests');
     Route::post('/profile/projects/{project}/regenerate-token', [ProjectController::class, 'regenerateToken'])->name('profile.projects.regenerate-token');
     Route::get('/profile/projects/{project}/settings', [ProjectController::class, 'settings'])->name('profile.projects.settings');
     Route::post('/profile/projects/{project}/update-settings', [ProjectController::class, 'updateSettings'])->name('profile.projects.update-settings');
+    Route::resource('profile/projects', ProjectController::class, ['as' => 'profile']);
     
     // Plans and transactions routes
     Route::get('/profile/plans', [\App\Http\Controllers\PlanController::class, 'userIndex'])->name('plans.index');

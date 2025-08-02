@@ -23,7 +23,7 @@
         <div class="px-6 py-8">
             <form action="{{ route('profile.projects.update', $project) }}" method="POST">
                 @csrf
-                @method('POST')
+                @method('PUT')
                 
                 <div class="space-y-6">
                     <!-- Project Name -->

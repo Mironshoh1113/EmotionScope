@@ -69,7 +69,9 @@
                         <p class="mt-1 text-sm text-gray-500">{{ __('projects.keep_secure') }}</p>
                     </div>
                     
-                    <form action="{{ route('profile.projects.regenerate-token', $project) }}" method="POST" class="inline">
+                    <!-- Debug: Project ID: {{ $project->id }} -->
+                    <!-- Debug: Generated URL: {{ route('profile.projects.regenerate-token', $project) }} -->
+                    <form action="{{ route('profile.projects.regenerate-token', $project) }}" method="POST" class="inline" id="regenerate-token-form">
                         @csrf
                         <button type="submit" 
                                 onclick="return confirm('Are you sure? This will invalidate the current token.')"
@@ -336,9 +338,11 @@ function copyToClipboard(button) {
         </svg>
     `;
     
-    set{{ __('projects.time') }}out(() => {
+    setTimeout(() => {
         button.innerHTML = originalHTML;
     }, 2000);
 }
+
+
 </script>
 @endsection 
